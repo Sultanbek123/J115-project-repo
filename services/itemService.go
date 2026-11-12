@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"october26Project/dtos"
 	"october26Project/entities"
 	"october26Project/mappers"
@@ -35,10 +36,13 @@ func (itemService *ItemService) GetItemByID(id int64) dtos.ItemDTO {
 	return itemDTO
 }
 
-func (itemService *ItemService) GetAllItems() []dtos.ItemDTO {
-	items := itemService.itemRepository.GetAllItems()
+func (itemService *ItemService) GetAllItems(ctx context.Context) ([]dtos.ItemDTO, error) {
+	items, err := itemService.itemRepository.GetAllItems(ctx)
+	if err != nil {
+		return nil, err
+	}
 	itemDTOs := mappers.MapToDTOs(items)
-	return itemDTOs
+	return itemDTOs, nil
 }
 
 func (itemService *ItemService) GetItemsByModel(model string) []dtos.ItemDTO {

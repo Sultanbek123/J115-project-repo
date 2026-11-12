@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"october26Project/entities"
@@ -35,18 +36,18 @@ func (itemRepository *ItemRepository) DeleteItem(id int64) {
 	}
 }
 
-func (itemRepository *ItemRepository) GetAllItems() []entities.Item {
+func (itemRepository *ItemRepository) GetAllItems(ctx context.Context) ([]entities.Item, error) {
 	var items []entities.Item
-	rows, err := itemRepository.db.Query("select * from items")
+	rows, err := itemRepository.db.QueryContext(ctx, "select * from items")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	for rows.Next() {
 		var item entities.Item
 		rows.Scan(&item.ID, &item.Model, &item.Price, &item.Weight, &item.InvoicePrice)
 		items = append(items, item)
 	}
-	return items
+	return items, nil
 }
 
 func (itemRepository *ItemRepository) GetItemByID(id int64) entities.Item {
